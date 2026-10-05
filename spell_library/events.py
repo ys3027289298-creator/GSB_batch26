@@ -5,36 +5,48 @@ def new_game():
     return {}
 
 def event_a(state):
-    return max(state["events"].items(), key=lambda item: item[1][0])[0]
+    return min(state["events"].items(), key=lambda item: item[1][0])[0]
 
 def event_b(state):
-    return True
+    return bool(state.get("shelf"))
 
 def event_c(state):
+    shelf = state.setdefault("shelf", [])
+    capacity = state.get("capacity", 1)
+    if len(shelf) >= capacity:
+        return False
+    shelf.append(state.get("spell"))
     return True
 
 def event_d(state):
-    return state["queue"].pop()
+    return state["queue"].pop(0)
 
 def event_e(state):
-    return len(state["items"]) - 1
+    return len(state["items"])
 
 def event_f(state):
-    state["next_id"] += 1
     return state["next_id"]
 
 def event_g(state):
+    if state["src"] < 10:
+        return False
     state["src"] -= 10
+    state["dst"] = state.get("dst", 0) + 10
     return True
 
 def event_h(state):
-    return True
+    return not state.get("closed", False)
 
 def event_i(state):
+    counted = state.setdefault("_counted", set())
+    key = json.dumps(state.get("events", {}), sort_keys=True, default=str)
+    if key in counted:
+        return False
+    counted.add(key)
     return True
 
 def event_j(state):
-    return True
+    return bool(state.get("spells"))
 
 def main():
     print("events 命令: run/quit")
