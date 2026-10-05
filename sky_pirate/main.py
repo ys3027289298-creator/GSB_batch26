@@ -5,35 +5,46 @@ def new_game():
     return {}
 
 def cmd_a(state):
-    return True
+    return state.get("plundered", False)
 
 def cmd_b(state):
-    return max(state["events"].items(), key=lambda item: item[1][0])[0]
+    return min(state["events"].items(), key=lambda item: item[1][0])[0]
 
 def cmd_c(state):
-    return True
+    return bool(state.get("events"))
 
 def cmd_d(state):
+    if state.get("paused"):
+        return False
+    state["paused"] = True
     return True
 
 def cmd_e(state):
-    return state["queue"].pop()
+    return state["queue"][0]
 
 def cmd_f(state):
-    return len(state["items"]) - 1
+    return len(state["items"])
 
 def cmd_g(state):
+    current = state["next_id"]
     state["next_id"] += 1
-    return state["next_id"]
+    return current
 
 def cmd_h(state):
-    state["src"] -= 10
+    if state["src"] <= 5:
+        return False
+    state["src"] -= 5
+    state["dst"] += 5
     return True
 
 def cmd_i(state):
-    return True
+    return not state.get("closed", False)
 
 def cmd_j(state):
+    if state.get("cleared"):
+        return False
+    state["events"] = {}
+    state["cleared"] = True
     return True
 
 def main():
