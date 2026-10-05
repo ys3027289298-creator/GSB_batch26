@@ -5,38 +5,45 @@ def new_game():
     return {}
 
 def cmd_a(state):
-    return state["audit"]
+    return [row for row in state["audit"] if row[0] == "a"]
 
 def cmd_b(state):
-    return True
+    return state["slots"] < state["cap"]
 
 def cmd_c(state):
-    return False
+    return not state.get("forecast")
 
 def cmd_d(state):
+    if state.get("paused"):
+        return state["clock"]
     state["clock"] += 1
     return state["clock"]
 
 def cmd_e(state):
-    return True
+    return bool(state.get("forecast"))
 
 def cmd_f(state):
+    if len(state["items"]) >= state["cap"]:
+        return False
     state["items"].append("x")
     return True
 
 def cmd_g(state):
-    return True
+    return not state.get("paused")
 
 def cmd_h(state):
-    state["count"] += 2
+    state["count"] += 1
     return state["count"]
 
 def cmd_i(state):
-    state["amount"] += -5
+    if state["amount"] < 5:
+        return False
+    state["amount"] -= 5
     return True
 
 def cmd_j(state):
     state["src"] -= 5
+    state["dst"] += 5
     return True
 
 def main():
