@@ -58,6 +58,19 @@ class TestMain(unittest.TestCase):
         state = main.new_game()
         self.assertFalse(main.cmd_j(state))
 
+    def test_rollback_full_channel(self):
+        state = main.new_game()
+        state.update({'items': ["a", "b"], 'cap': 2})
+        before = list(state["items"])
+        self.assertFalse(main.cmd_a(state))
+        self.assertEqual(state["items"], before)
+
+    def test_rollback_low_power(self):
+        state = main.new_game()
+        state.update({'amount': 3})
+        self.assertFalse(main.cmd_d(state))
+        self.assertEqual(state["amount"], 3)
+
 
 if __name__ == "__main__":
     unittest.main()
