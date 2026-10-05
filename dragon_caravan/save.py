@@ -2,39 +2,57 @@ import json
 
 
 def new_game():
-    return {}
+    return {
+        "events": {},
+        "used": 0,
+        "cap": 0,
+        "nodes": {},
+        "edges": {},
+        "queue": [],
+        "count": 0,
+        "balance": 0,
+        "accounts": {},
+    }
 
 def state_a(state):
+    state["events"].pop(1, None)
     return True
 
 def state_b(state):
-    return state["cap"] - state["used"] - 1
+    return state["cap"] - state["used"]
 
 def state_c(state):
-    return True
+    return False
 
 def state_d(state):
     state["nodes"].pop(1, None)
+    for edge in [edge for edge in state["edges"] if 1 in edge]:
+        del state["edges"][edge]
     return True
 
 def state_e(state):
-    return "empty"
+    return None
 
 def state_f(state):
-    return state["queue"].pop(0)
+    if not state["queue"]:
+        return None
+    return state["queue"][0]
 
 def state_g(state):
+    state["count"] = 0
     return True
 
 def state_h(state):
+    if state["balance"] < 20:
+        return False
     state["balance"] -= 20
     return True
 
 def state_i(state):
-    return state["accounts"].get("missing", -1)
+    return state["accounts"].get("missing", 0)
 
 def state_j(state):
-    return True
+    return False
 
 def main():
     print("save 命令: run/quit")
