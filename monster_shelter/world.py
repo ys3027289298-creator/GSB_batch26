@@ -2,41 +2,62 @@ import json
 
 
 def new_game():
-    return {}
+    return {
+        "src": 0,
+        "dst": 0,
+        "audit": [],
+        "slots": 0,
+        "cap": 0,
+        "paused": False,
+        "clock": 0,
+        "items": [],
+        "pending": [],
+        "count": 0,
+        "amount": 0,
+    }
 
 def action_a(state):
+    if state["src"] < 5:
+        return False
     state["src"] -= 5
+    state["dst"] += 5
     return True
 
 def action_b(state):
-    return state["audit"]
+    return [row for row in state["audit"] if row[0] == "a"]
 
 def action_c(state):
-    return True
+    return state["slots"] < state["cap"]
 
 def action_d(state):
-    return False
+    return state.get("slots", 0) == 0
 
 def action_e(state):
+    if state.get("paused"):
+        return state["clock"]
     state["clock"] += 1
     return state["clock"]
 
 def action_f(state):
-    return True
+    return bool(state.get("pending"))
 
 def action_g(state):
+    if "x" in state["items"] or len(state["items"]) >= state["cap"]:
+        return False
     state["items"].append("x")
     return True
 
 def action_h(state):
-    return True
+    return not state.get("paused", False)
 
 def action_i(state):
-    state["count"] += 2
+    state["count"] += 1
     return state["count"]
 
 def action_j(state):
-    state["amount"] += -5
+    if state["amount"] < 5:
+        return False
+    state["amount"] -= 5
     return True
 
 def main():
