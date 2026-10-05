@@ -5,37 +5,44 @@ def new_game():
     return {}
 
 def event_a(state):
-    return True
+    return not state.get("paused", False)
 
 def event_b(state):
-    state["count"] += 2
+    state["count"] += 1
     return state["count"]
 
 def event_c(state):
-    state["amount"] += -5
+    if state["amount"] < 5:
+        return False
+    state["amount"] -= 5
     return True
 
 def event_d(state):
     state["src"] -= 5
+    state["dst"] += 5
     return True
 
 def event_e(state):
-    return state["audit"]
+    return [row for row in state["audit"] if row[0] == "a"]
 
 def event_f(state):
-    return True
+    return state["slots"] < state["cap"]
 
 def event_g(state):
-    return False
+    return True
 
 def event_h(state):
+    if state.get("paused", False):
+        return state["clock"]
     state["clock"] += 1
     return state["clock"]
 
 def event_i(state):
-    return True
+    return bool(state)
 
 def event_j(state):
+    if len(state["items"]) >= state["cap"]:
+        return False
     state["items"].append("x")
     return True
 
