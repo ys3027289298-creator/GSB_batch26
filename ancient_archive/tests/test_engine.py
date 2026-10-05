@@ -1,3 +1,5 @@
+import os
+import tempfile
 import unittest
 
 import engine
@@ -57,6 +59,33 @@ class TestEngine(unittest.TestCase):
         state.update({'nodes': {1: True, 2: True}, 'edges': {(1, 2): 5}})
         engine.rule_j(state)
         self.assertNotIn((1, 2), state["edges"])
+
+    def test_pause_resume_roundtrip(self):
+        state = engine.new_game()
+        state.update({"queue": [1, 2], "count": 3, "balance": 40})
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "save.json")
+            self.assertTrue(engine.save_game(state, path))
+            self.assertEqual(engine.load_game(path), state)
+
+    def test_resume_missing_save(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "absent.json")
+            self.assertEqual(engine.load_game(path), engine.new_game())
+
+    def test_resume_corrupted_save(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "save.json")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write('{"queue": [1, 2], "count":')
+            self.assertEqual(engine.load_game(path), engine.new_game())
+
+    def test_resume_non_dict_save(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "save.json")
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write("[1, 2, 3]")
+            self.assertEqual(engine.load_game(path), engine.new_game())
 
 
 if __name__ == "__main__":
